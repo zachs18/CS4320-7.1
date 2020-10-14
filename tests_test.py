@@ -101,19 +101,39 @@ def test_add_student(grading_system):
 #pass
 def test_drop_student(grading_system):
 	user = "akend3"
-	course = "comp_sci"
+	course = "databases"
 
 	grading_system.login("goggins", "augurrox")
 	grading_system.usr.drop_student(user, course)
-	# note that add_student will corrupt the copy of the course db
-	# stored in memory for grading_system.user
-	# since add_student does not deep copy the assignments dict
-	# but there isn't really an easy way to test for that here,
-	# and this test fails anyway, so :shrug:
 	with open("Data/users.json") as userfile:
 		users = json.load(userfile)
 		assert course not in users[user]['courses'], \
 			"Student not correctly dropped from course"
+
+#pass
+def test_submit_assignment(grading_system):
+	user = "akend3"
+	password = "123454321"
+	course = "comp_sci"
+	assignment_name = "assignment1"
+	submission = "This is a test submission!"
+	submission_date = "11/1/20"
+
+	grading_system.login(user, password)
+	grading_system.usr.submit_assignment(course, assignment_name, submission, submission_date)
+	with open("Data/users.json") as userfile:
+		users = json.load(userfile)
+
+		assert assignment_name in users[user]['courses'][course], \
+			"Assignment not submitted correctly (not in db)"
+
+		assert submission == users[user]['courses'][course][assignment_name]['submission'], \
+			"Assignment not submitted correctly (db != submission)"
+
+		assert submission_date == users[user]['courses'][course][assignment_name]['submission_date'], \
+			"Assignment not submitted correctly (db != submission_date)"
+
+
 
 username2 = 'hdddd'
 username3 = 'yk3321'
