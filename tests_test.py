@@ -149,6 +149,27 @@ def test_check_ontime(grading_system):
 	assert not grading_system.usr.check_ontime("11/1/20", "10/29/20"), \
 		"Submission after due date marked ontime"
 
+#pass
+def test_check_grades(grading_system):
+	user = "akend3"
+	password = "123454321"
+
+	grading_system.login(user, password)
+
+	for course in grading_system.usr.courses:
+		grades = grading_system.usr.check_grades(course)
+
+		with open("Data/users.json") as userfile:
+			users = json.load(userfile)
+
+			courseinfo = users[user]['courses'][course]
+			for assignment, assignment_info in courseinfo.items():
+				assert [assignment, assignment_info['grade']] in grades, \
+					"Assignment {} not found in check_grades({}) but is in db for user {}".format(assignment, course, user)
+			for assignment, grade in grades:
+				assert assignment in courseinfo and courseinfo[assignment]['grade'] == grade, \
+					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+
 username2 = 'hdddd'
 username3 = 'yk3321'
 profUser = 'goggins'
