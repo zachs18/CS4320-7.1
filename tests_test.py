@@ -190,10 +190,10 @@ def test_view_assignments(grading_system):
 			courseinfo = courses[course]['assignments']
 			for assignment, assignment_info in courseinfo.items():
 				assert [assignment, assignment_info['due_date']] in assignments, \
-					"Assignment {} not found in check_grades({}) but is in db for user {}".format(assignment, course, user)
+					"Assignment {} not found in view_assignments({}) but is in db for user {}".format(assignment, course, user)
 			for assignment, due_date in assignments:
 				assert assignment in courseinfo and courseinfo[assignment]['due_date'] == due_date, \
-					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+					"Assignment {} not found in db but is in view_assignments({}) for user {}".format(assignment, course, user)
 
 #fail
 def test_add_student_corruption(grading_system):
@@ -228,10 +228,10 @@ def test_staff_check_grades(grading_system):
 			courseinfo = users[student]['courses'][course]
 			for assignment, assignment_info in courseinfo.items():
 				assert [assignment, assignment_info['grade']] in grades, \
-					"Assignment {} not found in check_grades({}) but is in db for user {}".format(assignment, course, user)
+					"Assignment {} not found in check_grades({}, {}) but is in db for user {}".format(assignment, user, course, user)
 			for assignment, grade in grades:
 				assert assignment in courseinfo and courseinfo[assignment]['grade'] == grade, \
-					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+					"Assignment {} not found in db but is in check_grades({}, {}) for user {}".format(assignment, user, course, user)
 """
 
 #fail
@@ -250,10 +250,10 @@ def test_view_assignments_user2(grading_system):
 			courseinfo = courses[course]['assignments']
 			for assignment, assignment_info in courseinfo.items():
 				assert [assignment, assignment_info['due_date']] in assignments, \
-					"Assignment {} not found in check_grades({}) but is in db for user {}".format(assignment, course, user)
+					"Assignment {} not found in view_assignments({}) but is in db for user {}".format(assignment, course, user)
 			for assignment, due_date in assignments:
 				assert assignment in courseinfo and courseinfo[assignment]['due_date'] == due_date, \
-					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+					"Assignment {} not found in db but is in view_assignments({}) for user {}".format(assignment, course, user)
 
 #fail
 def test_submit_assignment_user2(grading_system):
@@ -305,6 +305,26 @@ def test_submit_assignment_user3(grading_system):
 		assert submission_date == users[user]['courses'][course][assignment_name]['submission_date'], \
 			"Assignment not submitted correctly (db != submission_date)"
 
+#fail
+def test_view_assignments_user3(grading_system):
+	user = "yted91"
+	password = "imoutofpasswordnames"
+
+	grading_system.login(user, password)
+
+	for course in grading_system.usr.courses:
+		assignments = grading_system.usr.view_assignments(course)
+
+		with open("Data/courses.json") as coursefile:
+			courses = json.load(coursefile)
+
+			courseinfo = courses[course]['assignments']
+			for assignment, assignment_info in courseinfo.items():
+				assert [assignment, assignment_info['due_date']] in assignments, \
+					"Assignment {} not found in view_assignments({}) but is in db for user {}".format(assignment, course, user)
+			for assignment, due_date in assignments:
+				assert assignment in courseinfo and courseinfo[assignment]['due_date'] == due_date, \
+					"Assignment {} not found in db but is in view_assignments({}) for user {}".format(assignment, course, user)
 
 username2 = 'hdddd'
 username3 = 'yk3321'
