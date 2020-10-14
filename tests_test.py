@@ -255,6 +255,31 @@ def test_view_assignments_user2(grading_system):
 				assert assignment in courseinfo and courseinfo[assignment]['due_date'] == due_date, \
 					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
 
+#fail
+def test_submit_assignment_user2(grading_system):
+	test_create_assignment(grading_system)
+
+	user = "hdjsr7"
+	password = "pass1234"
+	course = "software_engineering"
+	assignment_name = "assignment3"
+	submission = "This is a test submission!"
+	submission_date = "11/1/20"
+
+	grading_system.login(user, password)
+	grading_system.usr.submit_assignment(course, assignment_name, submission, submission_date)
+	with open("Data/users.json") as userfile:
+		users = json.load(userfile)
+
+		assert assignment_name in users[user]['courses'][course], \
+			"Assignment not submitted correctly (not in db)"
+
+		assert submission == users[user]['courses'][course][assignment_name]['submission'], \
+			"Assignment not submitted correctly (db != submission)"
+
+		assert submission_date == users[user]['courses'][course][assignment_name]['submission_date'], \
+			"Assignment not submitted correctly (db != submission_date)"
+
 
 username2 = 'hdddd'
 username3 = 'yk3321'
