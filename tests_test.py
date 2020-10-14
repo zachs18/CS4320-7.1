@@ -98,6 +98,22 @@ def test_add_student(grading_system):
 		assert course in users[user]['courses'], \
 			"Student not correctly added to course"
 
+#pass
+def test_drop_student(grading_system):
+	user = "akend3"
+	course = "comp_sci"
+
+	grading_system.login("goggins", "augurrox")
+	grading_system.usr.drop_student(user, course)
+	# note that add_student will corrupt the copy of the course db
+	# stored in memory for grading_system.user
+	# since add_student does not deep copy the assignments dict
+	# but there isn't really an easy way to test for that here,
+	# and this test fails anyway, so :shrug:
+	with open("Data/users.json") as userfile:
+		users = json.load(userfile)
+		assert course not in users[user]['courses'], \
+			"Student not correctly dropped from course"
 
 username2 = 'hdddd'
 username3 = 'yk3321'
