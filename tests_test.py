@@ -2,10 +2,11 @@ import pytest
 import json
 
 import System
-import Student
+import RestoreData
 
 @pytest.fixture
 def grading_system():
+	RestoreData.main()
 	gradingSystem = System.System()
 	#gradingSystem.load_data() # this already happens in System.__init__
 	return gradingSystem
@@ -89,7 +90,7 @@ def test_add_student(grading_system):
 	grading_system.login("goggins", "augurrox")
 	grading_system.usr.add_student(user, course)
 	# note that add_student will corrupt the copy of the course db
-	# stored in memory for grading_system.user
+	# stored in memory for grading_system.usr
 	# since add_student does not deep copy the assignments dict
 	# but there isn't really an easy way to test for that here,
 	# and this test fails anyway, so :shrug:
@@ -169,6 +170,28 @@ def test_check_grades(grading_system):
 			for assignment, grade in grades:
 				assert assignment in courseinfo and courseinfo[assignment]['grade'] == grade, \
 					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+
+#fail
+def test_view_assignments(grading_system):
+	user = "hdjsr7"
+	password = "pass1234"
+
+	grading_system.login(user, password)
+
+	for course in grading_system.usr.courses:
+		assignments = grading_system.usr.view_assignments(course)
+
+		with open("Data/courses.json") as coursefile:
+			courses = json.load(coursefile)
+
+			courseinfo = courses[course]['assignments']
+			for assignment, assignment_info in courseinfo.items():
+				assert [assignment, assignment_info['due_date']] in assignments, \
+					"Assignment {} not found in check_grades({}) but is in db for user {}".format(assignment, course, user)
+			for assignment, due_date in assignments:
+				assert assignment in courseinfo and courseinfo[assignment]['due_date'] == due_date, \
+					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+
 
 username2 = 'hdddd'
 username3 = 'yk3321'
