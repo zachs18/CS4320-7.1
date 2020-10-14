@@ -154,7 +154,7 @@ def test_check_ontime(grading_system):
 		"Submission after due date marked ontime"
 
 #pass
-def test_check_grades(grading_system):
+def test_student_check_grades(grading_system):
 	user = "akend3"
 	password = "123454321"
 
@@ -211,6 +211,49 @@ def test_add_student_corruption(grading_system):
 		pass # we already know add_student doesn't work, but it also corrupts data
 
 	assert courses == grading_system.courses, "Profressor.add_student corrupts the copy of the courses db in memory"
+
+"""
+#pass
+def test_staff_check_grades(grading_system):
+	student = "akend3"
+
+	grading_system.login("goggins", "augurrox")
+
+	for course in grading_system.users[student]['courses']:
+		grades = grading_system.usr.check_grades(student, course)
+
+		with open("Data/users.json") as userfile:
+			users = json.load(userfile)
+
+			courseinfo = users[student]['courses'][course]
+			for assignment, assignment_info in courseinfo.items():
+				assert [assignment, assignment_info['grade']] in grades, \
+					"Assignment {} not found in check_grades({}) but is in db for user {}".format(assignment, course, user)
+			for assignment, grade in grades:
+				assert assignment in courseinfo and courseinfo[assignment]['grade'] == grade, \
+					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+"""
+
+#fail
+def test_view_assignments_user2(grading_system):
+	user = "akend3"
+	password = "123454321"
+
+	grading_system.login(user, password)
+
+	for course in grading_system.usr.courses:
+		assignments = grading_system.usr.view_assignments(course)
+
+		with open("Data/courses.json") as coursefile:
+			courses = json.load(coursefile)
+
+			courseinfo = courses[course]['assignments']
+			for assignment, assignment_info in courseinfo.items():
+				assert [assignment, assignment_info['due_date']] in assignments, \
+					"Assignment {} not found in check_grades({}) but is in db for user {}".format(assignment, course, user)
+			for assignment, due_date in assignments:
+				assert assignment in courseinfo and courseinfo[assignment]['due_date'] == due_date, \
+					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
 
 
 username2 = 'hdddd'
