@@ -52,7 +52,7 @@ def test_check_password(grading_system):
 			nopwd   = grading_system.check_password(username, None)
 			assert not nopwd, "None password deemed correct for user {}".format(username)
 
-
+#fail
 def test_change_grade(grading_system):
 	course = 'software_engineering'
 	assignment = 'assignment1'
@@ -63,6 +63,10 @@ def test_change_grade(grading_system):
 			original_grade = users[username]['courses'][course][assignment]['grade']
 		grading_system.login("goggins", "augurrox")
 		grading_system.usr.change_grade(username, course, assignment, original_grade+1)
+		with open("Data/users.json") as userfile:
+			users = json.load(userfile)
+			assert users[username]['courses'][course][assignment]['grade'] == original_grade+1, \
+				"Grade not correctly changed or saved"
 
 username2 = 'hdddd'
 username3 = 'yk3321'
