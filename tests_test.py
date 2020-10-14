@@ -68,6 +68,37 @@ def test_change_grade(grading_system):
 			assert users[username]['courses'][course][assignment]['grade'] == original_grade+1, \
 				"Grade not correctly changed or saved"
 
+#pass
+def test_create_assignment(grading_system):
+	course = 'software_engineering'
+	assignment = 'assignment1'
+	due_date = "1/1/21"
+
+	grading_system.login("goggins", "augurrox")
+	grading_system.usr.create_assignment(assignment, due_date, course)
+	with open("Data/courses.json") as coursefile:
+		courses = json.load(coursefile)
+		assert assignment in courses[course]['assignments'], "Assignment not added to course db"
+		assert courses[course]['assignments'][assignment]["due_date"] == due_date, "Assignment added to course db with incorrect due_date"
+
+#fail
+def test_add_student(grading_system):
+	user = "akend3"
+	course = "software_engineering"
+
+	grading_system.login("goggins", "augurrox")
+	grading_system.usr.add_student(user, course)
+	# note that add_student will corrupt the copy of the course db
+	# stored in memory for grading_system.user
+	# since add_student does not deep copy the assignments dict
+	# but there isn't really an easy way to test for that here,
+	# and this test fails anyway, so :shrug:
+	with open("Data/users.json") as userfile:
+		users = json.load(userfile)
+		assert course in users[user]['courses'], \
+			"Student not correctly added to course"
+
+
 username2 = 'hdddd'
 username3 = 'yk3321'
 profUser = 'goggins'
