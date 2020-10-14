@@ -1,5 +1,6 @@
 import pytest
 import json
+import copy
 
 import System
 import RestoreData
@@ -72,7 +73,7 @@ def test_change_grade(grading_system):
 #pass
 def test_create_assignment(grading_system):
 	course = 'software_engineering'
-	assignment = 'assignment1'
+	assignment = 'assignment3'
 	due_date = "1/1/21"
 
 	grading_system.login("goggins", "augurrox")
@@ -111,12 +112,14 @@ def test_drop_student(grading_system):
 		assert course not in users[user]['courses'], \
 			"Student not correctly dropped from course"
 
-#pass
+#fail
 def test_submit_assignment(grading_system):
+	test_create_assignment(grading_system)
+
 	user = "akend3"
 	password = "123454321"
-	course = "comp_sci"
-	assignment_name = "assignment1"
+	course = "software_engineering"
+	assignment_name = "assignment3"
 	submission = "This is a test submission!"
 	submission_date = "11/1/20"
 
@@ -191,6 +194,23 @@ def test_view_assignments(grading_system):
 			for assignment, due_date in assignments:
 				assert assignment in courseinfo and courseinfo[assignment]['due_date'] == due_date, \
 					"Assignment {} not found in db but is in check_grades({}) for user {}".format(assignment, course, user)
+
+#fail
+def test_add_student_corruption(grading_system):
+	user = "akend3"
+	course = "software_engineering"
+
+	grading_system.login("goggins", "augurrox")
+
+	courses = copy.deepcopy(grading_system.courses)
+	assert courses == grading_system.courses
+
+	try:
+		grading_system.usr.add_student(user, course)
+	except TypeError:
+		pass # we already know add_student doesn't work, but it also corrupts data
+
+	assert courses == grading_system.courses, "Profressor.add_student corrupts the copy of the courses db in memory"
 
 
 username2 = 'hdddd'
