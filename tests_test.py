@@ -133,7 +133,21 @@ def test_submit_assignment(grading_system):
 		assert submission_date == users[user]['courses'][course][assignment_name]['submission_date'], \
 			"Assignment not submitted correctly (db != submission_date)"
 
+#fail
+def test_check_ontime(grading_system):
+	user = "akend3"
+	password = "123454321"
 
+	grading_system.login(user, password)
+
+	assert grading_system.usr.check_ontime("11/1/20", "11/2/20"), \
+		"Submission before due date marked not ontime"
+
+	assert grading_system.usr.check_ontime("11/1/20", "11/1/20"), \
+		"Submission on due date marked not ontime"
+
+	assert not grading_system.usr.check_ontime("11/1/20", "10/29/20"), \
+		"Submission after due date marked ontime"
 
 username2 = 'hdddd'
 username3 = 'yk3321'
